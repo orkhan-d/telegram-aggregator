@@ -1,9 +1,13 @@
+import os
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
+mode = os.getenv('MODE', 'dev')
+
 
 class BaseServiceSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file=f'{mode}.env', extra='ignore')
 
 
 class DBSettings(BaseServiceSettings):
