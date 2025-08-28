@@ -18,7 +18,7 @@ class Userbot:
     def __init__(self) -> None:
         self.channel_ids = set()
         self.client: Client = Client(
-            name='footmic-aggregator',
+            name='telegram-aggregator',
             api_id=settings.userbot.api_id,
             api_hash=settings.userbot.api_hash,
         )

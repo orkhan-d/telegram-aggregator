@@ -27,6 +27,16 @@ services:
       db:
         condition: service_healthy
     restart: "no"
+  userbot:
+    build:
+      context: .
+      dockerfile: src/userbot/Dockerfile
+    env_file:
+      - prod.env
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    restart: always
 
 volumes:
   db_data:
