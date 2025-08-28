@@ -1,7 +1,10 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import MetaData
+from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
+from sqlalchemy import MetaData, text, func
 from core.settings import settings
+
+from datetime import datetime as dt, UTC
+from uuid import UUID
 
 
 DATABASE_URL = settings.db.url
@@ -19,6 +22,23 @@ convention = {
     'fk': 'fk__%(table_name)s__%(all_column_names)s__%(referred_table_name)s',
     'pk': 'pk__%(table_name)s',
 }
+
+
+class UuidPkMixin:
+    id: Mapped[UUID] = mapped_column(primary_key=True,
+                                     server_default=text('gen_random_uuid()'))
+
+
+class TimestampsMixin:
+    created_at: Mapped[dt] = mapped_column(
+        default=lambda: dt.now(UTC),
+        nullable=False
+    )
+    updated_at: Mapped[dt] = mapped_column(
+        default=lambda: dt.now(UTC),
+        onupdate=lambda: dt.now(UTC),
+        nullable=False
+    )
 
 
 class Base(DeclarativeBase):
