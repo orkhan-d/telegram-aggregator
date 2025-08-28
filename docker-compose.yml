@@ -11,6 +11,22 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  migrations:
+    build:
+      context: .
+      dockerfile: migrations/Dockerfile
+    env_file:
+      - prod.env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
 
 volumes:
   db_data:
