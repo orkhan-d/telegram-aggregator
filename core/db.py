@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from sqlalchemy import MetaData, text, func
@@ -45,6 +47,7 @@ class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=convention)
 
 
+@asynccontextmanager
 async def get_session() -> AsyncSession:
     async with AsyncSessionLocal() as session:
         yield session
