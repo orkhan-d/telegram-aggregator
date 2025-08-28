@@ -13,3 +13,6 @@ wheels/
 
 dev.env
 prod.env
+
+# userbot session files
+src/userbot/*.session
