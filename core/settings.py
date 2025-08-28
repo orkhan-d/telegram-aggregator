@@ -13,6 +13,10 @@ class DBSettings(BaseServiceSettings):
     port: int = Field(..., alias='DB_PORT')
     name: str = Field(..., alias='DB_NAME')
 
+    @property
+    def url(self) -> str:
+        return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}'
+
 
 class UserbotSettings(BaseServiceSettings):
     api_id: int = Field(..., alias='TELEGRAM_API_ID')
@@ -29,4 +33,4 @@ class Settings(BaseServiceSettings):
     gigachat: GigachatSettings = GigachatSettings()
 
 
-settins = Settings()
+settings = Settings()
