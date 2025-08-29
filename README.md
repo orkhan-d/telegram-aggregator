@@ -4,6 +4,12 @@ This project was (that was originally planned for using in my telegram channel) 
 
 It reads message texts, media, etc. and provides aggregated information using AI.
 
+#### Tech Stack
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-176DC3?style=for-the-badge&logo=pydantic&logoColor=white)
+
 ## Roadmap
 
 - [x] Parse Telegram chats
@@ -15,10 +21,9 @@ It reads message texts, media, etc. and provides aggregated information using AI
 
 Fill .env file via .env.example
 
-On first run:
+#### On first run:
 ```bash
 uv sync --locked --all-groups
-docker compose up --build -d migrations
 ```
 
 Then run the userbot:
@@ -26,12 +31,11 @@ Then run the userbot:
 uv run -m src.userbot.main
 ```
 
-And enter phone number and code. Then you can stop it and run via docker compose:
-```bash
-docker compose up -d --build
-```
+And enter phone number and code.
 
-For the future runs just:
+---
+
+#### For the future runs just:
 ```bash
 docker compose up -d --build
 ```
