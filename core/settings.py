@@ -19,7 +19,7 @@ class DBSettings(BaseServiceSettings):
 
     @property
     def url(self) -> str:
-        return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}'
+        return f'mongodb://{self.user}:{self.password}@{self.host}:{self.port}'
 
 
 class UserbotSettings(BaseServiceSettings):

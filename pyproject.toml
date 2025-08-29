@@ -6,19 +6,15 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiocron>=2.1",
-    "asyncpg>=0.30.0",
+    "beanie>=2.0.0",
     "dotenv>=0.9.9",
+    "motor>=3.7.1",
     "pydantic-settings>=2.10.1",
-    "sqlalchemy>=2.0.43",
 ]
 
 [dependency-groups]
 dev = [
     "ruff>=0.12.11",
-]
-migrations = [
-    "alembic>=1.16.5",
-    "greenlet>=3.2.4",
 ]
 userbot = [
     "pyrogram>=2.0.106",

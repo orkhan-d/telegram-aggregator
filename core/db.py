@@ -1,53 +1,16 @@
-from contextlib import asynccontextmanager
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
-from sqlalchemy import MetaData, text, func
 from core.settings import settings
+from src.models import models
 
-from datetime import datetime as dt, UTC
-from uuid import UUID
-
-
-DATABASE_URL = settings.db.url
-engine = create_async_engine(DATABASE_URL)
-AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+client = AsyncIOMotorClient(settings.db.url)
+db = client[settings.db.name]
 
 
-convention = {
-    'all_column_names': lambda constraint, table: '_'.join(
-        [column.name for column in constraint.columns.values()]
-    ),
-    'ix': 'ix__%(table_name)s__%(all_column_names)s',
-    'uq': 'uq__%(table_name)s__%(all_column_names)s',
-    'ck': 'ck__%(table_name)s__%(constraint_name)s',
-    'fk': 'fk__%(table_name)s__%(all_column_names)s__%(referred_table_name)s',
-    'pk': 'pk__%(table_name)s',
-}
+async def init_db():
+    await init_beanie(database=db, document_models=models)
 
-
-class UuidPkMixin:
-    id: Mapped[UUID] = mapped_column(primary_key=True,
-                                     server_default=text('gen_random_uuid()'))
-
-
-class TimestampsMixin:
-    created_at: Mapped[dt] = mapped_column(
-        default=lambda: dt.now(UTC),
-        nullable=False
+    await db["messages"].create_index(
+        [("channel_id", 1), ("message_id", 1)], unique=True
     )
-    updated_at: Mapped[dt] = mapped_column(
-        default=lambda: dt.now(UTC),
-        onupdate=lambda: dt.now(UTC),
-        nullable=False
-    )
-
-
-class Base(DeclarativeBase):
-    metadata = MetaData(naming_convention=convention)
-
-
-@asynccontextmanager
-async def get_session() -> AsyncSession:
-    async with AsyncSessionLocal() as session:
-        yield session
