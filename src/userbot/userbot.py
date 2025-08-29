@@ -49,12 +49,15 @@ class Userbot:
         await self.client.start()
         while True:
             async for message in self.client.get_chat_history(channel_id, limit=10, offset=offset):
+                if message.id in list(map(lambda m: m.id, messages)):
+                    continue
                 if last_datatime and message.date <= last_datatime:
                     break
 
-                text = message.text or message.caption
-                if text:
-                    messages.append(message)
+                if message.media_group_id:
+                    messages += await message.get_media_group()
+                else:
+                    messages += [message]
 
             if len(messages) < offset + 10 or last_datatime is None:
                 break
