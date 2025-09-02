@@ -2,8 +2,9 @@ import asyncio
 import aiocron
 
 from core.db import init_db
+from core.settings import settings
 
-from src.userbot.utils import get_message_media_file_id
+from src.userbot.utils import proceed_message_media
 from src.userbot.crud import get_last_message_created_at
 from src.userbot.userbot import userbot
 
@@ -21,38 +22,37 @@ async def scheduled_read_channels() -> None:
         last_datetime = await get_last_message_created_at(channel_id)
         db_messages = []
 
-        messages = await userbot.read_channel(channel_id, last_datetime)
+        await userbot.start()
 
-        channel = Channel(
-            channel_id=channel_id,
-            title=messages[0].chat.title if len(messages) else ""
-        )
+        messages = await userbot.read_channel(channel_id, last_datetime)
 
         while len(messages):
             message = messages.pop(0)
+            media_group = [message]
+            while len(messages) and messages[0].media_group_id == message.media_group_id:
+                media_group.append(messages.pop(0))
 
-            if message.media_group_id:
-                media_group = [message]
-                while len(messages) and messages[0].media_group_id == message.media_group_id:
-                    media_group.append(messages.pop(0))
+            text = message.text or message.caption or ""
+            media = []
+            for msg in media_group:
+                filename = await proceed_message_media(msg)
+                media.append(f'{settings.userbot.full_download_folder}/{filename}')
 
-                main_message = media_group[0]
-                db_messages.append(Message(
-                    text=main_message.text or main_message.caption or "",
-                    media=[get_message_media_file_id(m)
-                           for m in media_group],
-                    message_id=main_message.id,
-                    channel=channel,
-                    created_at=main_message.date
-                ))
-            else:
-                db_messages.append(Message(
-                    text=message.text or message.caption or "",
-                    media=get_message_media_file_id(message),
-                    message_id=message.id,
-                    channel=channel,
-                    created_at=message.date
-                ))
+            channel = Channel(
+                channel_id=channel_id,
+                title=message.chat.title
+            )
+
+            db_messages.append(Message(
+                text=text,
+                media=media,
+                message_id=message.id,
+                channel=channel,
+                created_at=message.date
+            ))
+
+        await userbot.stop()
+
         await save_messages(db_messages)
 
         await asyncio.sleep(10)

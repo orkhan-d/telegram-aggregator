@@ -23,6 +23,12 @@ class Userbot:
             api_hash=settings.userbot.api_hash,
         )
 
+    async def start(self):
+        await self.client.start()
+
+    async def stop(self):
+        await self.client.stop()
+
     async def init(self):
         self.channel_ids.update(settings.userbot.channel_ids)
         await self.get_channels_from_folders()
@@ -46,7 +52,6 @@ class Userbot:
         messages: list[types.Message] = []
         offset: int = 0
 
-        await self.client.start()
         while True:
             async for message in self.client.get_chat_history(channel_id, limit=10, offset=offset):
                 if message.id in list(map(lambda m: m.id, messages)):
@@ -64,8 +69,6 @@ class Userbot:
 
             offset += 10
             await asyncio.sleep(10)
-
-        await self.client.stop()
 
         return messages
 
