@@ -28,6 +28,7 @@ class UserbotSettings(BaseServiceSettings):
 
     channel_ids: list[int] = Field(default_factory=list, alias='CHANNELS_IDS')
     folder_names: list[str] = Field(default_factory=list, alias='FOLDER_NAMES')
+    downloads_folder: str = Field(..., alias='DOWNLOADS_FOLDER')
 
     @field_validator('channel_ids', mode='before')
     @classmethod
@@ -44,6 +45,10 @@ class UserbotSettings(BaseServiceSettings):
         return []
 
     model_config = SettingsConfigDict(env_file=f'{mode}.env', extra='ignore', enable_decoding=False)
+
+    @property
+    def full_download_folder(self):
+        return f'{os.getcwd()}/{self.downloads_folder}'
 
 
 class GigachatSettings(BaseServiceSettings):
