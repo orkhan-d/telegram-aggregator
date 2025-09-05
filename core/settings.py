@@ -34,7 +34,7 @@ class UserbotSettings(BaseServiceSettings):
     @classmethod
     def split_channel_ids(cls, v: str) -> list[int]:
         if isinstance(v, str):
-            return [int(i.strip()) for i in v.split(',') if i.strip().isdigit()]
+            return [int(i.strip()) for i in v.split(',') if i.strip().lstrip('-').isdigit()]
         return []
 
     @field_validator('folder_names', mode='before')
@@ -48,7 +48,7 @@ class UserbotSettings(BaseServiceSettings):
 
     @property
     def full_download_folder(self):
-        return f'{os.getcwd()}/{self.downloads_folder}'
+        return f'{os.getcwd()}/{self.downloads_folder}/'
 
 
 class GigachatSettings(BaseServiceSettings):

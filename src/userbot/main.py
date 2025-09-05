@@ -34,9 +34,12 @@ async def scheduled_read_channels() -> None:
 
             text = message.text or message.caption or ""
             media = []
+
             for msg in media_group:
                 filename = await proceed_message_media(msg)
-                media.append(f'{settings.userbot.full_download_folder}/{filename}')
+                if not filename:
+                    continue
+                media.append(f'{settings.userbot.full_download_folder}{filename}')
 
             channel = Channel(
                 channel_id=channel_id,
