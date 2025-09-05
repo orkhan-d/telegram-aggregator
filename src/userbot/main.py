@@ -29,10 +29,19 @@ async def scheduled_read_channels() -> None:
         while len(messages):
             message = messages.pop(0)
             media_group = [message]
-            while len(messages) and messages[0].media_group_id == message.media_group_id:
+            while len(messages) and message.media_group_id and messages[0].media_group_id == message.media_group_id:
                 media_group.append(messages.pop(0))
 
             text = message.text or message.caption or ""
+
+            try:
+                comment_message = await userbot.client.get_discussion_message(message.chat.id, message.id)
+            except:
+                comment_message = None
+
+            if message.reply_markup or not comment_message:
+                continue
+
             media = []
 
             for msg in media_group:
