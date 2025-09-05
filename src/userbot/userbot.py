@@ -35,11 +35,12 @@ class Userbot:
 
     async def get_channels_from_folders(self):
         if settings.userbot.folder_names:
+            folder_names = list(map(lambda n: n.lower(), settings.userbot.folder_names))
             await self.client.start()
 
             folders: list[DialogFilter | DialogFilterDefault] = await self.client.invoke(GetDialogFilters())
             for folder in folders:
-                if hasattr(folder, 'title') and folder.title.lower() == 'only футбол':
+                if hasattr(folder, 'title') and folder.title.lower() in folder_names:
                     peers = folder.include_peers
                     for p in peers:
                         if isinstance(p, InputPeerChannel):
