@@ -15,4 +15,8 @@ dev.env
 prod.env
 
 # userbot session files
-src/userbot/*.session
+*.session
+*.session-journal
+
+# saved message media
+downloads/

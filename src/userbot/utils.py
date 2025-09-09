@@ -1,14 +1,18 @@
-from pyrogram.types import Message
+from telethon import TelegramClient
+from telethon.types import Message
 
 from core.settings import settings
 
 
-async def proceed_message_media(message: Message) -> str | None:
-    if not message.media:
+async def process_message_media(client: TelegramClient, message: Message) -> str | None:
+    if client.is_connected():
+        if not message.media:
+            return None
+        elif message.media.photo or message.media.video or message.media.document:
+            path = await client.download_media(message, settings.userbot.full_download_folder)
+            return path.split('/')[-1]
+
+        await client.disconnect()
         return None
-
-    if message.photo or message.video or message.document:
-        path = await message.download(settings.userbot.full_download_folder)
-        return path.split('/')[-1]
-
-    raise Exception("Unsupported media type")
+    else:
+        return None
